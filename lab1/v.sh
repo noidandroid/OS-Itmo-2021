@@ -8,4 +8,4 @@ do
   then
   echo $string
   fi
-done > errors.log
+done > info.log
