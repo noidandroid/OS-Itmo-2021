@@ -1,3 +1,5 @@
+#!/bin/bash
+
 a=0
 if [[ $1 -gt $2 ]]
 then
