@@ -2,7 +2,7 @@
 
 IFS=$'\n'
 
-for email in $(grep -Eiorh "[A-Za-z0-9][A-Za-z0-9._%+-]+@[A-Za-z0-9][A-Za-z0-9.-]+\.[A-Za-z]{2-6}" /etc)
+for email in $(grep -Eiorh "[0-9A-Za-z_.]+@[0-9A-Za-z]+(\.[0-9A-Za-z]+)+" /etc)
 do
   echo -n $email", "
 done > emails.lst
