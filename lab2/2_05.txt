@@ -1,0 +1,10 @@
+Average_Running_Children_of_ParentID=0 is 0.163852
+Average_Running_Children_of_ParentID= is 
+Average_Running_Children_of_ParentID=1 is 0.369227
+Average_Running_Children_of_ParentID=2 is 0.091845
+Average_Running_Children_of_ParentID=829 is 0.096770
+Average_Running_Children_of_ParentID=833 is 0.048562
+Average_Running_Children_of_ParentID=2053 is 0.238768
+Average_Running_Children_of_ParentID=2071 is 0.075423
+Average_Running_Children_of_ParentID=2082 is 1.871283
+Average_Running_Children_of_ParentID=56922 is 0.544245
