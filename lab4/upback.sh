@@ -1,39 +1,48 @@
-ROOT="$OS_LABS/Lab5"
-RESTORE_DIR="$ROOT/restore"
+#!/bin/bash
 
-get_newest_backup_path () {
-    current_date_ts=$(date_to_timestamp "${LAUNCH_DATE}")
-    newest_backup_date=$(get_newest_backup_date)
-    if [[ ! -z $newest_backup_date ]]; then
-        echo "${ROOT}/Backup-${newest_backup_date}"
-    else
-        echo ""
-    fi
-}
+dir=../.trash
+log=../.trash.log
 
-get_newest_backup_date () {
-    newest_date=$(ls ${ROOT} |
-        grep -P "^Backup-\d{4}-\d{2}-\d{2}$" |
-        cut -d "-" -f 2,3,4 |
-        sort --numeric-sort --reverse |
-        head -n 1)
-    echo "$newest_date"
-}
+if [[ $# != 1 ]];
+  then
+      echo "Arguments exception: need 1 argument to be passed"
+      exit 1
+  fi
 
-restore () {
-    backup_dir=$1
-    mkdir ${RESTORE_DIR}
-    ls -A ${backup_dir} |
-        grep --invert -P ".*\d{4}-\d{2}-\d{2}$" |
-        awk -v backup_dir="${backup_dir}" '{ print backup_dir "/" $1 }' |
-        xargs cp -rvf --target=${RESTORE_DIR}
-}
 
-main () {
-    newest_backup_path=$(get_newest_backup_path)
-    echo $newest_backup_path
-    restore "${newest_backup_path}"
+restore_file () {
+    path=$1
+    filename=$2
+    ln -- $dir/"$filename" "$path"
 }
 
 
-main
+filename=$1
+line=""
+grep -- "$filename" $log |
+while read line; do
+    fullpath=$(echo "$line" | awk -F"'" '{print $1}')
+    fileRestore=$(dirname "$fullpath")
+    fileTrash=$(echo "$line" | awk '{print $NF}')
+
+    echo "Want to restore? (y/n)"
+    read answer < /dev/tty
+    case  "$answer" in
+    "y")
+        parent_directory="$fileRestore" &&
+            if [[ -d "$parent_directory" ]]; then
+                $(restore_file "$fileRestore" "$fileTrash")
+            else
+                $(restore_file "$HOME/$filename" "$fileTrash") &&
+                echo "Directory $parent_directory not exists anymore, restoring at $HOME"
+            fi &&
+            rm -- $dir/"$fileTrash" && echo "$filename was successfully restored"
+	;;
+     "n")
+        ;;
+      *)
+       echo "INVALID COMMAND"
+       ;;
+ esac
+done
+
