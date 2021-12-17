@@ -1,48 +1,16 @@
 #!/bin/bash
 
-dir=../.trash
-log=../.trash.log
+folderToRestore=~/restore
+lastBackupDate=$(ls ~ | grep -e "^Backup-" | sort -n -r | head -1 | sed "s/^Backup-//")
+lastBackup=~/Backup-$lastBackupDate
 
-if [[ $# != 1 ]];
-  then
-      echo "Arguments exception: need 1 argument to be passed"
-      exit 1
-  fi
+if [ ! -z $lastBackupDate ]; then
+    if [ ! -d $folderToRestore ]; then
+        mkdir $folderToRestore
+    fi
 
-
-restore_file () {
-    path=$1
-    filename=$2
-    ln -- $dir/"$filename" "$path"
-}
-
-
-filename=$1
-line=""
-grep -- "$filename" $log |
-while read line; do
-    fullpath=$(echo "$line" | awk -F"'" '{print $1}')
-    fileRestore=$(dirname "$fullpath")
-    fileTrash=$(echo "$line" | awk '{print $NF}')
-
-    echo "Want to restore? (y/n)"
-    read answer < /dev/tty
-    case  "$answer" in
-    "y")
-        parent_directory="$fileRestore" &&
-            if [[ -d "$parent_directory" ]]; then
-                $(restore_file "$fileRestore" "$fileTrash")
-            else
-                $(restore_file "$HOME/$filename" "$fileTrash") &&
-                echo "Directory $parent_directory not exists anymore, restoring at $HOME"
-            fi &&
-            rm -- $dir/"$fileTrash" && echo "$filename was successfully restored"
-	;;
-     "n")
-        ;;
-      *)
-       echo "INVALID COMMAND"
-       ;;
- esac
-done
+    for file in $(ls $lastBackup | grep -E -v "[0-9]{4}-[0-9]{2}-[0-9]{2}"); do
+        cp $lastBackup/$file $folderToRestore/$file
+    done
+fi
 
